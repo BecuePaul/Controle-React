@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,68 +24,128 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper function to determine the evolution chain based on the Pokemon's ID
+  const determineEvolutionChain = async (currentPokemon: Pokemon) => {
+    const preEvolutions: Pokemon[] = [];
+    const evolutions: Pokemon[] = [];
+    
+    // Known evolution chains
+    const evolutionChains = [
+      // Bulbasaur chain
+      { id: 1, chain: [1, 2, 3] },
+      // Charmander chain
+      { id: 4, chain: [4, 5, 6] },
+      // Squirtle chain
+      { id: 7, chain: [7, 8, 9] },
+      // Add more chains as needed
+    ];
+    
+    // Find the chain that contains the current Pokemon
+    const chain = evolutionChains.find(chain => 
+      chain.chain.includes(currentPokemon.pokedexId)
+    );
+    
+    if (chain) {
+      const currentIndex = chain.chain.indexOf(currentPokemon.pokedexId);
+      
+      // Get pre-evolutions
+      for (let i = 0; i < currentIndex; i++) {
+        try {
+          const preEvolutionData = await getPokemonById(chain.chain[i]);
+          preEvolutions.push(preEvolutionData);
+        } catch (err) {
+          console.error(`Error fetching pre-evolution with ID ${chain.chain[i]}:`, err);
+        }
+      }
+      
+      // Get evolutions
+      for (let i = currentIndex + 1; i < chain.chain.length; i++) {
+        try {
+          const evolutionData = await getPokemonById(chain.chain[i]);
+          evolutions.push(evolutionData);
+        } catch (err) {
+          console.error(`Error fetching evolution with ID ${chain.chain[i]}:`, err);
+        }
+      }
+    } else {
+      // Fallback to API data if the chain is not predefined
+      // Fetch pre-evolution if exists
+      const preEvolution = currentPokemon.preEvolution || currentPokemon.apiPreEvolution;
+      
+      console.log("Current Pokemon:", currentPokemon.name, "ID:", currentPokemon.pokedexId);
+      console.log("Pre-evolution data:", preEvolution);
+      
+      if (preEvolution) {
+        try {
+          const preEvoId = preEvolution.pokedexId || preEvolution.pokedexIdd;
+          console.log("Pre-evolution ID:", preEvoId);
+          
+          if (preEvoId) {
+            const preEvolutionData = await getPokemonById(preEvoId);
+            console.log("Fetched pre-evolution:", preEvolutionData.name);
+            preEvolutions.push(preEvolutionData);
+            
+            // Check if there's an earlier pre-evolution
+            const earlierPreEvo = preEvolutionData.preEvolution || preEvolutionData.apiPreEvolution;
+            console.log("Earlier pre-evolution data:", earlierPreEvo);
+            
+            if (earlierPreEvo) {
+              const earlierPreEvoId = earlierPreEvo.pokedexId || earlierPreEvo.pokedexIdd;
+              console.log("Earlier pre-evolution ID:", earlierPreEvoId);
+              
+              if (earlierPreEvoId) {
+                const earlierPreEvolution = await getPokemonById(earlierPreEvoId);
+                console.log("Fetched earlier pre-evolution:", earlierPreEvolution.name);
+                preEvolutions.unshift(earlierPreEvolution);
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching pre-evolution:", err);
+        }
+      }
+      
+      // Fetch evolutions
+      const evolutionsArray = currentPokemon.evolutions || currentPokemon.apiEvolutions;
+      
+      if (evolutionsArray && evolutionsArray.length > 0) {
+        await Promise.all(
+          evolutionsArray.map(async (evolution) => {
+            try {
+              const evolutionData = await getPokemonById(evolution.pokedexId);
+              evolutions.push(evolutionData);
+              
+              // Check if there are further evolutions
+              const furtherEvolutions = evolutionData.evolutions || evolutionData.apiEvolutions;
+              if (furtherEvolutions && furtherEvolutions.length > 0) {
+                await Promise.all(
+                  furtherEvolutions.map(async (furtherEvolution) => {
+                    try {
+                      const furtherEvolutionData = await getPokemonById(furtherEvolution.pokedexId);
+                      evolutions.push(furtherEvolutionData);
+                    } catch (err) {
+                      console.error("Error fetching further evolution:", err);
+                    }
+                  })
+                );
+              }
+            } catch (err) {
+              console.error("Error fetching evolution:", err);
+            }
+          })
+        );
+      }
+    }
+    
+    return { preEvolutions, evolutions };
+  };
+
   useEffect(() => {
     const fetchEvolutionChain = async () => {
       try {
         setIsLoading(true);
         
-        // Fetch pre-evolution if exists
-        const preEvolutions: Pokemon[] = [];
-        const preEvolution = pokemon.preEvolution || pokemon.apiPreEvolution;
-        
-        if (preEvolution) {
-          try {
-            const preEvoId = preEvolution.pokedexId || preEvolution.pokedexIdd;
-            if (preEvoId) {
-              const preEvolutionData = await getPokemonById(preEvoId);
-              preEvolutions.push(preEvolutionData);
-              
-              // Check if there's an earlier pre-evolution
-              const earlierPreEvo = preEvolutionData.preEvolution || preEvolutionData.apiPreEvolution;
-              if (earlierPreEvo) {
-                const earlierPreEvoId = earlierPreEvo.pokedexId || earlierPreEvo.pokedexIdd;
-                if (earlierPreEvoId) {
-                  const earlierPreEvolution = await getPokemonById(earlierPreEvoId);
-                  preEvolutions.unshift(earlierPreEvolution);
-                }
-              }
-            }
-          } catch (err) {
-            console.error("Error fetching pre-evolution:", err);
-          }
-        }
-        
-        // Fetch evolutions
-        const evolutions: Pokemon[] = [];
-        const evolutionsArray = pokemon.evolutions || pokemon.apiEvolutions;
-        
-        if (evolutionsArray && evolutionsArray.length > 0) {
-          await Promise.all(
-            evolutionsArray.map(async (evolution) => {
-              try {
-                const evolutionData = await getPokemonById(evolution.pokedexId);
-                evolutions.push(evolutionData);
-                
-                // Check if there are further evolutions
-                const furtherEvolutions = evolutionData.evolutions || evolutionData.apiEvolutions;
-                if (furtherEvolutions && furtherEvolutions.length > 0) {
-                  await Promise.all(
-                    furtherEvolutions.map(async (furtherEvolution) => {
-                      try {
-                        const furtherEvolutionData = await getPokemonById(furtherEvolution.pokedexId);
-                        evolutions.push(furtherEvolutionData);
-                      } catch (err) {
-                        console.error("Error fetching further evolution:", err);
-                      }
-                    })
-                  );
-                }
-              } catch (err) {
-                console.error("Error fetching evolution:", err);
-              }
-            })
-          );
-        }
+        const { preEvolutions, evolutions } = await determineEvolutionChain(pokemon);
         
         setEvolutionChain({
           preEvolutions,

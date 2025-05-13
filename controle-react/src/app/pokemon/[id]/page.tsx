@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Pokemon } from "@/types/pokemon";
 import PokemonStats from "@/components/PokemonStats";
+import PokemonEvolutions from "@/components/PokemonEvolutions";
 
 interface PokemonDetailPageProps {
   params: {
@@ -137,24 +138,8 @@ export default async function PokemonDetailPage(props: PokemonDetailPageProps) {
       </div>
       
       {/* Pokemon evolutions */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
-        <h3 className="text-xl font-bold mb-4">Evolutions</h3>
-        {pokemon.evolutions && pokemon.evolutions.length > 0 ? (
-          <div className="flex flex-wrap gap-4 justify-center">
-            {pokemon.evolutions.map((evolution) => (
-              <Link 
-                key={evolution.pokedexId}
-                href={`/pokemon/${evolution.pokedexId}`}
-                className="text-center p-4 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                <p className="font-semibold capitalize">{evolution.name}</p>
-                <p className="text-sm text-gray-500">#{evolution.pokedexId}</p>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">This Pokémon does not evolve.</p>
-        )}
+      <div className="mb-6">
+        <PokemonEvolutions pokemon={pokemon} />
       </div>
     </div>
   );
