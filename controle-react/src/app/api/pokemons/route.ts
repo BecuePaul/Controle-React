@@ -8,9 +8,16 @@ export async function GET(request: NextRequest) {
     const name = searchParams.get('name');
     const typeId = searchParams.get('typeId');
     
-    console.log('API Route - Received params:', { limit, page, name, typeId });
+    const types = searchParams.getAll('types');
     
-    // Build the query parameters
+    console.log('API Route - Received params:', { 
+      limit, 
+      page, 
+      name, 
+      typeId, 
+      types: types.length > 0 ? types : 'none' 
+    });
+    
     const queryParams = new URLSearchParams();
     queryParams.append('limit', limit);
     queryParams.append('page', page);
@@ -22,9 +29,6 @@ export async function GET(request: NextRequest) {
     if (typeId) {
       queryParams.append('typeId', typeId);
     }
-    
-    // Get types from the query string (they might be multiple)
-    const types = searchParams.getAll('types');
     if (types.length > 0) {
       types.forEach(type => queryParams.append('types', type));
     }

@@ -24,23 +24,16 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Helper function to determine the evolution chain based on the Pokemon's ID
   const determineEvolutionChain = async (currentPokemon: Pokemon) => {
     const preEvolutions: Pokemon[] = [];
     const evolutions: Pokemon[] = [];
     
-    // Known evolution chains
     const evolutionChains = [
-      // Bulbasaur chain
       { id: 1, chain: [1, 2, 3] },
-      // Charmander chain
       { id: 4, chain: [4, 5, 6] },
-      // Squirtle chain
       { id: 7, chain: [7, 8, 9] },
-      // Add more chains as needed
     ];
     
-    // Find the chain that contains the current Pokemon
     const chain = evolutionChains.find(chain => 
       chain.chain.includes(currentPokemon.pokedexId)
     );
@@ -48,7 +41,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
     if (chain) {
       const currentIndex = chain.chain.indexOf(currentPokemon.pokedexId);
       
-      // Get pre-evolutions
       for (let i = 0; i < currentIndex; i++) {
         try {
           const preEvolutionData = await getPokemonById(chain.chain[i]);
@@ -58,7 +50,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
         }
       }
       
-      // Get evolutions
       for (let i = currentIndex + 1; i < chain.chain.length; i++) {
         try {
           const evolutionData = await getPokemonById(chain.chain[i]);
@@ -68,8 +59,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
         }
       }
     } else {
-      // Fallback to API data if the chain is not predefined
-      // Fetch pre-evolution if exists
       const preEvolution = currentPokemon.preEvolution || currentPokemon.apiPreEvolution;
       
       console.log("Current Pokemon:", currentPokemon.name, "ID:", currentPokemon.pokedexId);
@@ -85,7 +74,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
             console.log("Fetched pre-evolution:", preEvolutionData.name);
             preEvolutions.push(preEvolutionData);
             
-            // Check if there's an earlier pre-evolution
             const earlierPreEvo = preEvolutionData.preEvolution || preEvolutionData.apiPreEvolution;
             console.log("Earlier pre-evolution data:", earlierPreEvo);
             
@@ -105,7 +93,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
         }
       }
       
-      // Fetch evolutions
       const evolutionsArray = currentPokemon.evolutions || currentPokemon.apiEvolutions;
       
       if (evolutionsArray && evolutionsArray.length > 0) {
@@ -115,7 +102,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
               const evolutionData = await getPokemonById(evolution.pokedexId);
               evolutions.push(evolutionData);
               
-              // Check if there are further evolutions
               const furtherEvolutions = evolutionData.evolutions || evolutionData.apiEvolutions;
               if (furtherEvolutions && furtherEvolutions.length > 0) {
                 await Promise.all(
@@ -206,7 +192,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
       <h3 className="text-xl font-bold mb-6">Evolution Chain</h3>
       
       <div className="flex flex-wrap items-center justify-center gap-4">
-        {/* Pre-evolutions */}
         {evolutionChain.preEvolutions.map((preEvolution, index) => (
           <div key={preEvolution.id} className="flex items-center">
             <PokemonEvolutionCard pokemon={preEvolution} />
@@ -221,7 +206,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
           </div>
         ))}
         
-        {/* Arrow between pre-evolution and current */}
         {evolutionChain.preEvolutions.length > 0 && (
           <div className="mx-2 text-gray-400">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -230,12 +214,10 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
           </div>
         )}
         
-        {/* Current Pokemon */}
         <div className="relative">
           <PokemonEvolutionCard pokemon={evolutionChain.current} isCurrent={true} />
         </div>
         
-        {/* Arrow between current and evolutions */}
         {evolutionChain.evolutions.length > 0 && (
           <div className="mx-2 text-gray-400">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -244,7 +226,6 @@ export default function PokemonEvolutions({ pokemon }: PokemonEvolutionsProps) {
           </div>
         )}
         
-        {/* Evolutions */}
         {evolutionChain.evolutions.map((evolution, index) => (
           <div key={evolution.id} className="flex items-center">
             <PokemonEvolutionCard pokemon={evolution} />
@@ -269,7 +250,6 @@ interface PokemonEvolutionCardProps {
 }
 
 function PokemonEvolutionCard({ pokemon, isCurrent = false }: PokemonEvolutionCardProps) {
-  // Get gradient based on Pokemon type
   const getTypeGradient = (typeName: string): string => {
     const typeGradients: Record<string, string> = {
       normal: 'from-gray-200 to-gray-400',
@@ -304,10 +284,8 @@ function PokemonEvolutionCard({ pokemon, isCurrent = false }: PokemonEvolutionCa
           : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:z-10"
       }`}
     >
-      {/* Background with subtle pattern based on type */}
       <div className={`absolute inset-0 opacity-10 bg-gradient-to-br rounded-xl ${getTypeGradient(pokemon.types?.[0]?.name || 'normal')}`}></div>
       
-      {/* Current Pokemon indicator */}
       {isCurrent && (
         <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
           Current

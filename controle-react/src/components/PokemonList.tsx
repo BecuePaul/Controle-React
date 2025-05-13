@@ -43,14 +43,12 @@ export default function PokemonList({ initialPokemons }: PokemonListProps) {
     [isLoading, hasMore]
   );
 
-  // Apply filters to the pokemons
   useEffect(() => {
     console.log("Applying filters:", filters);
     console.log("Current pokemons:", pokemons);
     
     let result = [...pokemons];
     
-    // Filter by name
     if (filters.name) {
       const searchTerm = filters.name.toLowerCase();
       result = result.filter(pokemon => 
@@ -59,7 +57,6 @@ export default function PokemonList({ initialPokemons }: PokemonListProps) {
       console.log("After name filter:", result.length);
     }
     
-    // Filter by type
     if (filters.types && filters.types.length > 0) {
       console.log("Filtering by types:", filters.types);
       result = result.filter(pokemon => {
@@ -77,20 +74,15 @@ export default function PokemonList({ initialPokemons }: PokemonListProps) {
     setHasMore(result.length >= (filters.limit || 50));
   }, [pokemons, filters]);
 
-  // Fetch more Pokemon data when page changes
   useEffect(() => {
-    if (filters.page === 0) return; // Skip initial load as we already have initialPokemons
+    if (filters.page === 0) return;
     
     const fetchMorePokemons = async () => {
       try {
         setIsLoading(true);
         
-        // Create a new filters object with the current page
         const paginationFilters = {
           ...filters,
-          // We need to keep the original page value for the API call
-          // but we don't want to include any name or type filters
-          // so that we get the next batch of all Pokémon
           name: undefined,
           types: undefined,
           typeId: undefined,
@@ -99,17 +91,13 @@ export default function PokemonList({ initialPokemons }: PokemonListProps) {
         console.log("Fetching more Pokémon with filters:", paginationFilters);
         const response = await getPokemonList(paginationFilters);
         
-        // Add the new Pokémon to the list, avoiding duplicates
         setPokemons((prevPokemons) => {
-          // Create a Set of existing Pokémon IDs for quick lookup
           const existingIds = new Set(prevPokemons.map(p => p.id));
           
-          // Filter out any Pokémon that already exist in the list
           const newPokemons = response.filter(p => !existingIds.has(p.id));
           
           console.log(`Adding ${newPokemons.length} new Pokémon to the list`);
           
-          // Return the combined list
           return [...prevPokemons, ...newPokemons];
         });
         
@@ -126,9 +114,7 @@ export default function PokemonList({ initialPokemons }: PokemonListProps) {
     fetchMorePokemons();
   }, [filters.page]);
 
-  // Handle filter changes
   const handleFilterChange = (newFilters: PokemonFilters) => {
-    // Reset page to 0 when filters change
     setFilters({
       ...newFilters,
       page: 0,
@@ -137,7 +123,6 @@ export default function PokemonList({ initialPokemons }: PokemonListProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      {/* Filters sidebar */}
       <div className="lg:col-span-1">
         <PokemonFiltersComponent 
           filters={filters} 
@@ -145,7 +130,6 @@ export default function PokemonList({ initialPokemons }: PokemonListProps) {
         />
       </div>
       
-      {/* Pokemon grid */}
       <div className="lg:col-span-3">
         {error ? (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">

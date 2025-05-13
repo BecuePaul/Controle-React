@@ -24,8 +24,8 @@ export interface Pokemon {
   apiEvolutions?: PokemonEvolution[];
   preEvolution?: PokemonPreEvolution | null;
   apiPreEvolution?: PokemonPreEvolution | null;
-  resistancesWithAbilities?: any[]; // Can be typed more specifically if needed
-  apiResistancesWithAbilities?: any[]; // Can be typed more specifically if needed
+  resistancesWithAbilities?: any[]; 
+  apiResistancesWithAbilities?: any[]; 
 }
 
 export interface PokemonType {

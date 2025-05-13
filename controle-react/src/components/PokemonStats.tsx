@@ -5,10 +5,8 @@ interface PokemonStatsProps {
 }
 
 export default function PokemonStats({ pokemon }: PokemonStatsProps) {
-  // Maximum stat value for scaling the progress bars
   const MAX_STAT_VALUE = 255;
   
-  // Stats to display with fallbacks for different API property names
   const stats = [
     { name: "HP", value: pokemon.stats.HP, color: "bg-green-500", icon: "❤️" },
     { name: "Attack", value: pokemon.stats.attack, color: "bg-red-500", icon: "⚔️" },
@@ -28,17 +26,14 @@ export default function PokemonStats({ pokemon }: PokemonStatsProps) {
     { name: "Speed", value: pokemon.stats.speed, color: "bg-yellow-500", icon: "⚡" },
   ];
 
-  // Calculate stat quality (low, medium, high)
   const getStatQuality = (value: number) => {
     if (value < 50) return "Low";
     if (value < 100) return "Medium";
     return "High";
   };
 
-  // Calculate total stats
   const totalStats = Object.values(pokemon.stats).reduce((a, b) => a + b, 0);
   
-  // Determine Pokemon's strength based on total stats
   const getPokemonStrength = (total: number) => {
     if (total < 300) return "Basic";
     if (total < 450) return "Intermediate";
@@ -94,7 +89,6 @@ export default function PokemonStats({ pokemon }: PokemonStatsProps) {
         })}
       </div>
       
-      {/* Total stats */}
       <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
         <div className="flex justify-between items-center mb-2">
           <div className="font-bold text-lg flex items-center">

@@ -12,15 +12,12 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
       href={`/pokemon/${pokemon.pokedexId}`}
       className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 hover:scale-105 border border-gray-100 dark:border-gray-700 relative"
     >
-      {/* Pokemon ID Badge */}
       <div className="absolute top-2 right-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-mono font-semibold z-10 shadow-sm">
         #{pokemon.pokedexId.toString().padStart(3, '0')}
       </div>
       
-      {/* Background with subtle pattern based on type */}
       <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${getTypeGradient(pokemon.types?.[0]?.name || 'normal')}`}></div>
       
-      {/* Image container with subtle hover effect */}
       <div className="relative h-48 bg-gray-50 dark:bg-gray-700 overflow-hidden group-hover:bg-gray-100 dark:group-hover:bg-gray-600 transition-colors">
         <div className="absolute inset-0 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
           <Image
@@ -29,7 +26,7 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-contain p-4 drop-shadow-md"
-            priority={pokemon.pokedexId <= 10} // Prioritize loading for first few Pokemon
+            priority={pokemon.pokedexId <= 10}
           />
         </div>
       </div>
@@ -49,7 +46,6 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
   );
 }
 
-// Helper function to get gradient based on Pokemon type
 function getTypeGradient(typeName: string): string {
   const typeGradients: Record<string, string> = {
     normal: 'from-gray-200 to-gray-400',
@@ -80,7 +76,6 @@ interface TypeBadgeProps {
 }
 
 function TypeBadge({ type }: TypeBadgeProps) {
-  // Map of type names to background colors
   const typeColors: Record<string, string> = {
     normal: "bg-gray-400",
     fire: "bg-red-500",
@@ -100,7 +95,6 @@ function TypeBadge({ type }: TypeBadgeProps) {
     dark: "bg-gray-700",
     steel: "bg-gray-400",
     fairy: "bg-pink-300",
-    // Add any missing types here
   };
 
   const bgColor = typeColors[type.name.toLowerCase()] || "bg-gray-500";

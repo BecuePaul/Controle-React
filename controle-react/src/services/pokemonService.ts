@@ -1,8 +1,5 @@
 import { Pokemon, PokemonFilters, PokemonType } from "@/types/pokemon";
 
-/**
- * Builds a URL with query parameters for the Pokemon API
- */
 const buildUrl = (endpoint: string, params?: Record<string, any>): string => {
   let url = endpoint;
   
@@ -28,9 +25,6 @@ const buildUrl = (endpoint: string, params?: Record<string, any>): string => {
   return url;
 };
 
-/**
- * Fetches a list of Pokemon based on filters
- */
 export const getPokemonList = async (filters: PokemonFilters = {}): Promise<Pokemon[]> => {
   const { page, limit = 50, typeId, types, name } = filters;
   
@@ -69,9 +63,6 @@ export const getPokemonList = async (filters: PokemonFilters = {}): Promise<Poke
   }
 };
 
-/**
- * Fetches a single Pokemon by its Pokedex ID
- */
 export const getPokemonById = async (pokedexId: number): Promise<Pokemon> => {
   const url = `/api/pokemons/${pokedexId}`;
   
@@ -95,9 +86,6 @@ export const getPokemonById = async (pokedexId: number): Promise<Pokemon> => {
   }
 };
 
-/**
- * Fetches all Pokemon types
- */
 export const getPokemonTypes = async (): Promise<PokemonType[]> => {
   const url = "/api/types";
   

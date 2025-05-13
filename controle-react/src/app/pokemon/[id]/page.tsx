@@ -10,7 +10,6 @@ interface PokemonDetailPageProps {
   };
 }
 
-// Server component - fetches data on the server
 async function getPokemon(id: string) {
   try {
     const response = await fetch(`https://nestjs-pokedex-api.vercel.app/pokemons/${id}`, {
@@ -32,7 +31,6 @@ async function getPokemon(id: string) {
 }
 
 export default async function PokemonDetailPage(props: PokemonDetailPageProps) {
-  // Await the params object before using its properties
   const params = await Promise.resolve(props.params);
   const pokemon = await getPokemon(params.id);
 
@@ -58,7 +56,6 @@ export default async function PokemonDetailPage(props: PokemonDetailPageProps) {
     );
   }
 
-  // Get gradient based on Pokemon type
   const getTypeGradient = (typeName: string): string => {
     const typeGradients: Record<string, string> = {
       normal: 'from-gray-200 to-gray-400',
@@ -86,7 +83,6 @@ export default async function PokemonDetailPage(props: PokemonDetailPageProps) {
 
   return (
     <div>
-      {/* Back button */}
       <div className="mb-8">
         <Link 
           href="/"
@@ -99,12 +95,9 @@ export default async function PokemonDetailPage(props: PokemonDetailPageProps) {
         </Link>
       </div>
       
-      {/* Pokemon header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8 border border-gray-100 dark:border-gray-700 relative">
-        {/* Background gradient based on Pokemon type */}
         <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${getTypeGradient(pokemon.types?.[0]?.name || 'normal')}`}></div>
         
-        {/* Pokemon ID badge */}
         <div className="absolute top-4 right-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-mono font-bold shadow-sm">
           #{pokemon.pokedexId.toString().padStart(3, '0')}
         </div>
@@ -183,12 +176,10 @@ export default async function PokemonDetailPage(props: PokemonDetailPageProps) {
         </div>
       </div>
       
-      {/* Pokemon stats */}
       <div className="mb-8">
         <PokemonStats pokemon={pokemon} />
       </div>
       
-      {/* Pokemon evolutions */}
       <div className="mb-8">
         <PokemonEvolutions pokemon={pokemon} />
       </div>

@@ -15,7 +15,6 @@ export default function PokemonFilters({ filters, onFilterChange }: PokemonFilte
   const [searchTerm, setSearchTerm] = useState(filters.name || "");
   const [limitValue, setLimitValue] = useState(filters.limit?.toString() || "50");
 
-  // Fetch Pokemon types on component mount
   useEffect(() => {
     const fetchTypes = async () => {
       try {
@@ -34,32 +33,27 @@ export default function PokemonFilters({ filters, onFilterChange }: PokemonFilte
     fetchTypes();
   }, []);
 
-  // Handle name filter change
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     setSearchTerm(newName);
     
-    // Apply filter after a short delay to avoid too many API calls while typing
     const timeoutId = setTimeout(() => {
       onFilterChange({
         ...filters,
         name: newName || undefined,
-        page: 0, // Reset to first page when filter changes
+        page: 0,
       });
     }, 500);
 
     return () => clearTimeout(timeoutId);
   };
 
-  // Handle type filter change
   const handleTypeChange = (typeId: number) => {
     let newSelectedTypes: number[];
     
     if (selectedTypes.includes(typeId)) {
-      // Remove type if already selected
       newSelectedTypes = selectedTypes.filter(id => id !== typeId);
     } else {
-      // Add type if not already selected
       newSelectedTypes = [...selectedTypes, typeId];
     }
     
@@ -69,15 +63,14 @@ export default function PokemonFilters({ filters, onFilterChange }: PokemonFilte
     const newFilters = {
       ...filters,
       types: newSelectedTypes.length > 0 ? newSelectedTypes : undefined,
-      typeId: undefined, // Clear single type filter when using multiple types
-      page: 0, // Reset to first page when filter changes
+      typeId: undefined,
+      page: 0,
     };
     
     console.log("New filters:", newFilters);
     onFilterChange(newFilters);
   };
 
-  // Handle limit change
   const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLimit = parseInt(e.target.value);
     setLimitValue(e.target.value);
@@ -85,11 +78,10 @@ export default function PokemonFilters({ filters, onFilterChange }: PokemonFilte
     onFilterChange({
       ...filters,
       limit: newLimit,
-      page: 0, // Reset to first page when limit changes
+      page: 0,
     });
   };
 
-  // Clear all filters
   const handleClearFilters = () => {
     setSearchTerm("");
     setSelectedTypes([]);
@@ -111,7 +103,6 @@ export default function PokemonFilters({ filters, onFilterChange }: PokemonFilte
       </h2>
       
       <div className="space-y-6">
-        {/* Name filter */}
         <div className="relative">
           <label htmlFor="name-filter" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Pokemon Name
@@ -150,7 +141,6 @@ export default function PokemonFilters({ filters, onFilterChange }: PokemonFilte
           </div>
         </div>
         
-        {/* Limit filter */}
         <div>
           <label htmlFor="limit-filter" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Pokemon per page
@@ -175,7 +165,6 @@ export default function PokemonFilters({ filters, onFilterChange }: PokemonFilte
           </div>
         </div>
         
-        {/* Type filters */}
         <div>
           <label className="block text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">
             Pokemon Types
@@ -216,7 +205,6 @@ export default function PokemonFilters({ filters, onFilterChange }: PokemonFilte
           )}
         </div>
         
-        {/* Clear filters button */}
         <button
           onClick={handleClearFilters}
           className="w-full py-2.5 mt-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-center font-medium text-gray-700 dark:text-gray-300"
