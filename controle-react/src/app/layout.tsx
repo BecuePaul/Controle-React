@@ -29,23 +29,23 @@ export default function RootLayout({
         <style>{`
           :root {
             --normal-color: #A8A878;
-            --fire-color: #F08030;
-            --water-color: #6890F0;
-            --electric-color: #F8D030;
-            --grass-color: #78C850;
+            --feu-color: #F08030;
+            --eau-color: #6890F0;
+            --électrik-color: #F8D030;
+            --plante-color: #78C850;
             --ice-color: #98D8D8;
-            --fighting-color: #C03028;
+            --combat-color: #C03028;
             --poison-color: #A040A0;
-            --ground-color: #E0C068;
-            --flying-color: #A890F0;
-            --psychic-color: #F85888;
-            --bug-color: #A8B820;
-            --rock-color: #B8A038;
-            --ghost-color: #705898;
+            --sol-color: #E0C068;
+            --vol-color: #A890F0;
+            --psy-color: #F85888;
+            --insecte-color: #A8B820;
+            --roche-color: #B8A038;
+            --spectre-color: #705898;
             --dragon-color: #7038F8;
             --dark-color: #705848;
-            --steel-color: #B8B8D0;
-            --fairy-color: #EE99AC;
+            --acier-color: #B8B8D0;
+            --fee-color: #EE99AC;
           }
         `}</style>
       </head>
