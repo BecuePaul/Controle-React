@@ -85,9 +85,34 @@ export default function PokemonList({ initialPokemons }: PokemonListProps) {
       try {
         setIsLoading(true);
         
-        const response = await getPokemonList(filters);
+        // Create a new filters object with the current page
+        const paginationFilters = {
+          ...filters,
+          // We need to keep the original page value for the API call
+          // but we don't want to include any name or type filters
+          // so that we get the next batch of all Pokémon
+          name: undefined,
+          types: undefined,
+          typeId: undefined,
+        };
         
-        setPokemons((prevPokemons) => [...prevPokemons, ...response]);
+        console.log("Fetching more Pokémon with filters:", paginationFilters);
+        const response = await getPokemonList(paginationFilters);
+        
+        // Add the new Pokémon to the list, avoiding duplicates
+        setPokemons((prevPokemons) => {
+          // Create a Set of existing Pokémon IDs for quick lookup
+          const existingIds = new Set(prevPokemons.map(p => p.id));
+          
+          // Filter out any Pokémon that already exist in the list
+          const newPokemons = response.filter(p => !existingIds.has(p.id));
+          
+          console.log(`Adding ${newPokemons.length} new Pokémon to the list`);
+          
+          // Return the combined list
+          return [...prevPokemons, ...newPokemons];
+        });
+        
         setHasMore(response.length === (filters.limit || 50));
         setError(null);
       } catch (err) {
