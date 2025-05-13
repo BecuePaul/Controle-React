@@ -10,24 +10,34 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
   return (
     <Link 
       href={`/pokemon/${pokemon.pokedexId}`}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 hover:shadow-lg"
+      className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 hover:scale-105 border border-gray-100 dark:border-gray-700 relative"
     >
-      <div className="relative h-48 bg-gray-100 dark:bg-gray-700">
-        <Image
-          src={pokemon.image}
-          alt={pokemon.name}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-contain p-4"
-          priority={pokemon.pokedexId <= 10} // Prioritize loading for first few Pokemon
-        />
+      {/* Pokemon ID Badge */}
+      <div className="absolute top-2 right-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-mono font-semibold z-10 shadow-sm">
+        #{pokemon.pokedexId.toString().padStart(3, '0')}
       </div>
       
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-bold capitalize">{pokemon.name}</h2>
-          <span className="text-sm text-gray-500 dark:text-gray-400">#{pokemon.pokedexId}</span>
+      {/* Background with subtle pattern based on type */}
+      <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${getTypeGradient(pokemon.types?.[0]?.name || 'normal')}`}></div>
+      
+      {/* Image container with subtle hover effect */}
+      <div className="relative h-48 bg-gray-50 dark:bg-gray-700 overflow-hidden group-hover:bg-gray-100 dark:group-hover:bg-gray-600 transition-colors">
+        <div className="absolute inset-0 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+          <Image
+            src={pokemon.image}
+            alt={pokemon.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-contain p-4 drop-shadow-md"
+            priority={pokemon.pokedexId <= 10} // Prioritize loading for first few Pokemon
+          />
         </div>
+      </div>
+      
+      <div className="p-5">
+        <h2 className="text-lg font-bold capitalize mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          {pokemon.name}
+        </h2>
         
         <div className="flex flex-wrap gap-2">
           {pokemon.types && pokemon.types.map((type) => (
@@ -37,6 +47,32 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
       </div>
     </Link>
   );
+}
+
+// Helper function to get gradient based on Pokemon type
+function getTypeGradient(typeName: string): string {
+  const typeGradients: Record<string, string> = {
+    normal: 'from-gray-200 to-gray-400',
+    fire: 'from-red-300 to-orange-500',
+    water: 'from-blue-300 to-blue-500',
+    electric: 'from-yellow-200 to-yellow-400',
+    grass: 'from-green-300 to-green-500',
+    ice: 'from-blue-100 to-blue-300',
+    fighting: 'from-red-400 to-red-700',
+    poison: 'from-purple-300 to-purple-500',
+    ground: 'from-yellow-300 to-yellow-600',
+    flying: 'from-indigo-200 to-indigo-400',
+    psychic: 'from-pink-300 to-pink-500',
+    bug: 'from-lime-300 to-lime-500',
+    rock: 'from-yellow-400 to-yellow-700',
+    ghost: 'from-purple-400 to-purple-700',
+    dragon: 'from-indigo-400 to-indigo-600',
+    dark: 'from-gray-500 to-gray-700',
+    steel: 'from-gray-300 to-gray-500',
+    fairy: 'from-pink-200 to-pink-400',
+  };
+
+  return typeGradients[typeName.toLowerCase()] || 'from-gray-200 to-gray-400';
 }
 
 interface TypeBadgeProps {

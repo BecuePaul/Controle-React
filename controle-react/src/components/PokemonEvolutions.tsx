@@ -269,38 +269,90 @@ interface PokemonEvolutionCardProps {
 }
 
 function PokemonEvolutionCard({ pokemon, isCurrent = false }: PokemonEvolutionCardProps) {
+  // Get gradient based on Pokemon type
+  const getTypeGradient = (typeName: string): string => {
+    const typeGradients: Record<string, string> = {
+      normal: 'from-gray-200 to-gray-400',
+      fire: 'from-red-300 to-orange-500',
+      water: 'from-blue-300 to-blue-500',
+      electric: 'from-yellow-200 to-yellow-400',
+      grass: 'from-green-300 to-green-500',
+      ice: 'from-blue-100 to-blue-300',
+      fighting: 'from-red-400 to-red-700',
+      poison: 'from-purple-300 to-purple-500',
+      ground: 'from-yellow-300 to-yellow-600',
+      flying: 'from-indigo-200 to-indigo-400',
+      psychic: 'from-pink-300 to-pink-500',
+      bug: 'from-lime-300 to-lime-500',
+      rock: 'from-yellow-400 to-yellow-700',
+      ghost: 'from-purple-400 to-purple-700',
+      dragon: 'from-indigo-400 to-indigo-600',
+      dark: 'from-gray-500 to-gray-700',
+      steel: 'from-gray-300 to-gray-500',
+      fairy: 'from-pink-200 to-pink-400',
+    };
+  
+    return typeGradients[typeName?.toLowerCase()] || 'from-gray-200 to-gray-400';
+  };
+
   return (
     <Link 
       href={`/pokemon/${pokemon.pokedexId}`}
-      className={`block p-4 rounded-lg transition-transform hover:scale-105 ${
+      className={`group block p-5 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-xl relative ${
         isCurrent 
-          ? "bg-blue-100 dark:bg-blue-900 border-2 border-blue-500" 
-          : "bg-gray-100 dark:bg-gray-700"
+          ? "bg-blue-100 dark:bg-blue-900 border-2 border-blue-500 shadow-md" 
+          : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:z-10"
       }`}
     >
-      <div className="flex flex-col items-center">
-        <div className="relative w-24 h-24">
+      {/* Background with subtle pattern based on type */}
+      <div className={`absolute inset-0 opacity-10 bg-gradient-to-br rounded-xl ${getTypeGradient(pokemon.types?.[0]?.name || 'normal')}`}></div>
+      
+      {/* Current Pokemon indicator */}
+      {isCurrent && (
+        <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+          Current
+        </div>
+      )}
+      
+      <div className="flex flex-col items-center relative">
+        <div className="relative w-28 h-28 transition-transform duration-300 group-hover:scale-110">
           <Image
             src={pokemon.image}
             alt={pokemon.name}
             fill
-            sizes="96px"
-            className="object-contain"
+            sizes="112px"
+            className="object-contain drop-shadow-md"
           />
         </div>
         
-        <div className="mt-2 text-center">
-          <p className="font-semibold capitalize">{pokemon.name}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">#{pokemon.pokedexId}</p>
+        <div className="mt-3 text-center">
+          <p className="font-bold capitalize text-base group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            {pokemon.name}
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+            #{pokemon.pokedexId.toString().padStart(3, '0')}
+          </p>
         </div>
         
-        <div className="mt-2 flex gap-1">
+        <div className="mt-3 flex gap-1.5 flex-wrap justify-center">
           {pokemon.types && pokemon.types.map((type) => (
             <div 
               key={type.id}
-              className="px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-600"
+              className="px-2.5 py-0.5 text-xs font-medium rounded-full flex items-center gap-1"
+              style={{
+                backgroundColor: `var(--${type.name.toLowerCase()}-color, #A8A878)`,
+                color: 'white',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+              }}
             >
-              {type.name}
+              {type.image && (
+                <img 
+                  src={type.image} 
+                  alt={type.name} 
+                  className="w-3 h-3" 
+                />
+              )}
+              <span className="capitalize">{type.name}</span>
             </div>
           ))}
         </div>
